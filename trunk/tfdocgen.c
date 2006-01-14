@@ -39,7 +39,7 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 	FILE *fi;
 	char line[65536];
 
-// open file	
+	// open file	
 	fi = fopen(filename, "rt");
 	if(fi == NULL)
 	{
@@ -47,7 +47,7 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 		return -1;
 	}
 
-// process
+	// process
 	while(!feof(fi))
 	{
 		fgets(line, sizeof(line), fi);
@@ -149,7 +149,7 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 		}
 	}
 
-// close file
+	// close file
 	fclose(fi);
 	return 0;
 }
@@ -215,7 +215,7 @@ static void write_fncts_content(FILE *fo, GList *fncts)
         {
 		fnct *f = l->data;
 
-                // title
+		// title
 		fprintf(fo, "<h3><a name=\"%s\"></a>%s</h3>\n", 
 			f->title, f->title);
 
@@ -267,6 +267,7 @@ static void write_fncts_content(FILE *fo, GList *fncts)
 
 int main(int argc, char **argv)
 {
+	char *top_folder;
 	char *src_folder;
 	char *doc_folder;
 	char *txt_file;
@@ -278,22 +279,24 @@ int main(int argc, char **argv)
 	GList *l, *l2;
 
 	// Check and get program arguments
-#if 0
-	if(argc < 3)
-		return -1;
+	if(argc < 2)
+	{
+		char *p;
 
-	doc_folder = argv[1];
-	src_folder = argv[2];
-#else
-	// test
-#ifdef __WIN32__
-	src_folder = "C:\\sources\\roms\\ticables2\\src\\";
-	doc_folder = "C:\\sources\\roms\\ticables2\\docs\\";
-#else
-	src_folder = "/home/devel/tilp_project/libs/cables2/src";
-	doc_folder = "/home/devel/tilp_project/libs/cables2/docs";
-#endif
-#endif
+		top_folder = g_get_current_dir();
+		p = strrchr(top_folder, G_DIR_SEPARATOR);
+		if(*p)
+			*p = '\0';
+	}
+	else
+	{
+		top_folder = g_strdup(argv[1]);
+	}
+
+	src_folder = g_build_path(G_DIR_SEPARATOR_S, top_folder, "src", NULL);
+	doc_folder = g_build_path(G_DIR_SEPARATOR_S, top_folder, "docs", NULL);
+
+	printf("Top folder: <%s>\n", top_folder);
 	printf("Doc folder: <%s>\n", doc_folder);
 	printf("Src folder: <%s>\n", src_folder);
 
@@ -398,7 +401,7 @@ int main(int argc, char **argv)
 	fclose(fo);
 
 	/* 
-		Part 4: write files by topics 
+		Part 4: write files per topics 
 	*/
 
 	printf("Write help per topics.\n");
@@ -450,6 +453,8 @@ int main(int argc, char **argv)
 		g_list_free(t->fncts);
         }
 	g_list_free(topics);
+
+	g_free(top_folder);
 	
 	return 0;
 }
