@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(tfdocgen.c)
-AM_INIT_AUTOMAKE(tfdocgen, 0.1.0)
+AM_INIT_AUTOMAKE(tfdocgen, 1.0.0)
 
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AM_CONFIG_HEADER(config.h)
