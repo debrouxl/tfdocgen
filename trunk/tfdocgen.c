@@ -1,7 +1,32 @@
-#include <stdio.h>
-#include <glib.h>
-#include <string.h>
+/* Hey EMACS -*- linux-c -*- */
+/* $Id: gtk_update.c 3057 2006-11-06 17:14:37Z roms $ */
 
+/*  tfdocgen - Tilp Framework Documentation Generator
+ *  Copyright (C) 2006-2007  Romain Liévin
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <glib.h>
+
+/*****************************************************************************/
+
+#define VERSION	"1.0"
 #define TOKEN1	"==========[ List of entries ]=========="
 
 GList *topics = NULL;
@@ -29,9 +54,11 @@ typedef struct
 // Used to describe a comment entry on an argument
 typedef struct
 {
-	gchar *name;     // such as "number"
-	gchar *comment; // such as "error number"
+	gchar *name;		// such as "number"
+	gchar *comment;		// such as "error number"
 } arg;
+
+/*****************************************************************************/
 
 // Open a C or H file and search for comment on function.
 static int get_list_of_functions(const char *filename, GList **fncts)
@@ -154,6 +181,7 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 	return 0;
 }
 
+// Parse list of topics and write Table Of Contents
 static void write_api_toc(FILE *fo)
 {
 	GList *l, *m;
@@ -176,6 +204,7 @@ static void write_api_toc(FILE *fo)
 	}
 }
 
+// Write header of topic
 static void write_topic_header(FILE *fo, const char *topic_name)
 {
 	fprintf(fo, "<html>\n");
@@ -197,6 +226,7 @@ static void write_topic_header(FILE *fo, const char *topic_name)
 	fprintf(fo, "<hr>\n");
 }
 
+// Write queue of topic
 static void write_topic_end(FILE *fo)
 {
 	fprintf(fo, "<h3><a href=\"file:index.html\">Return to the main index</a> </h3>");
@@ -207,6 +237,7 @@ static void write_topic_end(FILE *fo)
 	fprintf(fo, "</html>\n");
 }
 
+// Write contents of topic
 static void write_fncts_content(FILE *fo, GList *fncts)
 {
 	GList *l, *m;
@@ -265,6 +296,80 @@ static void write_fncts_content(FILE *fo, GList *fncts)
 	}
 }
 
+/*****************************************************************************/
+
+// Display program version
+static int version(void)
+{
+	fprintf(stdout, "tfdocgen - Version %s\n", VERSION);
+	fprintf(stdout, "(c) Romain Lievin 2006-2007\n");
+	fprintf(stdout, "THIS PROGRAM COMES WITH ABSOLUTELY NO WARRANTY\n");
+	fprintf(stdout, "PLEASE READ THE DOCUMENTATION FOR DETAILS\n");
+
+	return 0;
+}
+
+/*
+  Display a short help
+*/
+static int help(void)
+{
+	fprintf(stdout, "\n");
+
+	version();
+
+	fprintf(stdout, "usage: tfdocgen [-options] [directory]\n");
+	fprintf(stdout, "\n");
+	fprintf(stdout, "-h, --help     display this information page and exit\n");
+	fprintf(stdout, "-v, --version  display the version information and exit\n");
+	fprintf(stdout, "\n");
+	fprintf(stdout, "directory      directory to parse\n");
+	fprintf(stdout, "\n");
+
+	exit(0);
+	return 0;
+}
+
+#define strexact(p1,p2) (!strcmp((p1),(p2)))
+
+/*
+  Scan the command line, extract arguments and init variables
+*/
+static int scan_cmdline(int argc, char **argv)
+{
+	int cnt;
+	char *p;
+	char msg[80];
+	int import = 0;
+  
+	for(cnt=1; cnt<argc; cnt++) 
+	{
+		p = argv[cnt];
+
+		if(*p == '-') 
+		{
+			// a long option (like --help)
+			p++;
+		} else 
+		{
+			// a folder to parse
+		}
+
+		strcpy(msg, p);
+	      
+		if(strexact(msg, "-help") || strexact(msg, "h")) 
+			help();
+
+		if(strexact(msg, "-version") || strexact(msg, "v")) 
+		{ 
+			//version(); 
+			exit(0); 
+		}
+	}
+
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	char *top_folder;
@@ -278,11 +383,15 @@ int main(int argc, char **argv)
 	char line[65536];
 	GList *l, *l2;
 
-	// Check and get program arguments
+	/*
+		Get program arguments
+	*/
+	scan_cmdline(argc, argv);
 	if(argc < 2)
 	{
 		char *p;
 
+		// if no folder is provided, get the current one
 		top_folder = g_get_current_dir();
 		p = strrchr(top_folder, G_DIR_SEPARATOR);
 		if(*p)
@@ -293,6 +402,7 @@ int main(int argc, char **argv)
 		top_folder = g_strdup(argv[1]);
 	}
 
+	// Build paths
 	src_folder = g_build_path(G_DIR_SEPARATOR_S, top_folder, "src", NULL);
 	doc_folder = g_build_path(G_DIR_SEPARATOR_S, top_folder, "docs", NULL);
 
