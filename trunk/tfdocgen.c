@@ -40,6 +40,10 @@ typedef struct
 	GList*  fncts;     // a linked list of fnct structure
 } topic;
 
+#define TYPE_FNCT	0
+#define TYPE_STRUCT	1
+#define TYPE_ENUM	2
+
 // Used to describe a comment entry before a function
 typedef struct
 {
@@ -117,28 +121,35 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 
 			// get comment
 			f->comment = g_strdup("");
-			do
+			while(!feof(fi))
 			{
 				gchar *tmp;
 
 				fgets(line, sizeof(line), fi);
+				if(!strncmp(line, " *", 2) && (line[2] == '\r' || line[2] == '\n'))
+					break;
+				if(!strncmp(line, " * ", 3) && (line[3] == '\r' || line[3] == '\n'))
+					break;
+				if(line[1] != '*')
+					break;
 		
 				tmp = g_strconcat(f->comment, line+3, NULL);
 				g_free(f->comment);
 				f->comment = tmp;
-				//printf("%s", line);
-			} while(strcmp(line, " *") <= 0);
+				//printf("%s (%i)", line, strcmp(line, " *"));
+			}
 			//printf("[%s]\n", f->comment);
 
-                        // get return value
-			fgets(line, sizeof(line), fi);
+            // get return value
 			f->returns = g_strdup("");
-			while(!feof(fi) && strncmp(line, " **/", 4))
+			while(!feof(fi))
 			{
 				gchar *tmp;
 				
 				fgets(line, sizeof(line), fi);
-				if(strncmp(line, " **/", 4) > 0)
+				if(!strncmp(line, " **/", 4))
+					break;
+				if(line[1] != '*')
 					break;
 
 				tmp = g_strconcat(f->returns, line+3, NULL);
@@ -155,10 +166,12 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 			f->declaration = g_strdup(line);
 			//printf("[%s]", line);
 			if(strstr(line, "tifiles_"))
-				f->type = 0;
+				f->type = TYPE_FNCT;
+			else if(strstr(line, "struct"))
+				f->type = TYPE_STRUCT;
 			else if(strstr(line, "enum"))
 			{
-				f->type = 1;
+				f->type = TYPE_ENUM;
 				
 				while(!feof(fi) && line[0] != '}')
 				{
@@ -247,8 +260,7 @@ static void write_fncts_content(FILE *fo, GList *fncts)
 		fnct *f = l->data;
 
 		// title
-		fprintf(fo, "<h3><a name=\"%s\"></a>%s</h3>\n", 
-			f->title, f->title);
+		fprintf(fo, "<h3><a name=\"%s\"></a>%s</h3>\n", f->title, f->title);
 
 		// declaration
 		fprintf(fo, "<table style=\"width: 100%%; text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">\n");
@@ -265,8 +277,11 @@ static void write_fncts_content(FILE *fo, GList *fncts)
 		fprintf(fo, "<br>\n");
 
 		// table begin
-		fprintf(fo, "<table style=\"width: 100%%; text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">\n");
-		fprintf(fo, "<tbody>\n");
+		if(f->type == TYPE_FNCT || f->type == TYPE_STRUCT)
+		{
+			fprintf(fo, "<table style=\"width: 100%%; text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">\n");
+			fprintf(fo, "<tbody>\n");
+		}
 
 		// write table with arguments
 		for(m = f->args; m != NULL; m = g_list_next(m))
@@ -281,7 +296,7 @@ static void write_fncts_content(FILE *fo, GList *fncts)
 			fprintf(fo, "</tr>\n");
 		}
 
-		if(f->type == 0)
+		if(f->type == TYPE_FNCT)
 		{
 			fprintf(fo, "<tr>\n");
 			fprintf(fo, "<td style=\"vertical-align: top;\">%s<br></td>\n", "Return value :");
@@ -290,9 +305,12 @@ static void write_fncts_content(FILE *fo, GList *fncts)
 		}
 
 		// table end
-		fprintf(fo, "</tbody>\n");
-		fprintf(fo, "</table>\n");
-		fprintf(fo, "<br>\n");
+		if(f->type == TYPE_FNCT || f->type == TYPE_STRUCT)
+		{
+			fprintf(fo, "</tbody>\n");
+			fprintf(fo, "</table>\n");
+			fprintf(fo, "<br>\n");
+		}
 	}
 }
 
@@ -417,11 +435,11 @@ int main(int argc, char **argv)
 	// Open list of topics ("api.txt")
 	txt_file = g_strconcat(doc_folder, G_DIR_SEPARATOR_S, 
 			       "api.txt", NULL);
-	printf("Read list of topic from <%s>.\n", txt_file);
+	printf("Read list of topic from <%s>\n", txt_file);
 	f = fopen(txt_file, "rt");
 	if(f == NULL)
 	{
-		printf("Can't open list of topics: <%s>.\n", txt_file);
+		printf("Can't open list of topics: <%s>\n", txt_file);
 		return -1;
 	}
 
@@ -474,18 +492,18 @@ int main(int argc, char **argv)
 	fi = fopen(src_file, "rt");
 	if(fi == NULL)
 	{
-		printf("Can't open input file: <%s>.\n", txt_file);
+		printf("Can't open input file: <%s>\n", txt_file);
 		return -1;
 	}
 
 	dst_file = g_strconcat(doc_folder, G_DIR_SEPARATOR_S, 
 			       "html", G_DIR_SEPARATOR_S, "api.html", 
 			       NULL);
-	printf("Write API index in <%s>.\n", dst_file);
+	printf("Write API index in <%s>\n", dst_file);
 	fo = fopen(dst_file, "wt");
 	if(fo == NULL)
 	{
-		printf("Can't open output file: <%s>.\n", dst_file);
+		printf("Can't open output file: <%s>\n", dst_file);
 		return -1;
 	}
 
@@ -528,7 +546,7 @@ int main(int argc, char **argv)
 		f = fopen(filename, "wt");
 		if(f == NULL)
 		{
-			printf("Can't open this file: <%s>.\n", filename);
+			printf("Can't open this file: <%s>\n", filename);
 			return -1;
 		}
 
