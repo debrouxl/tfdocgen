@@ -65,7 +65,7 @@ QMAKE_LFLAGS_RELEASE = -s
 # Distribution
 #
 
-DISTFILES += $${man.files} tfdocgen.dsp tfdocgen.dsw \
+DISTFILES += $${man.files} Makefile tfdocgen.dsp tfdocgen.dsw \
 	AUTHORS ChangeLog COPYING INSTALL README*
 
 distbz2.target = dist-bzip2
