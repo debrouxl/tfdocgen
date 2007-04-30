@@ -1,0 +1,14 @@
+Source: tfdocgen
+Section: devel
+Priority: extra
+Maintainer: Romain LIEVIN <roms@tilp.info>
+Build-Depends: debhelper (>= 5), libglib2.0-dev
+Standards-Version: 3.7.2
+
+Package: tfdocgen
+Architecture: any
+Depends: libglib2.0-0
+Description: Tilp Framework Documentation Generator
+ The tfdocgen program is a program used by libti*2 libraries to generate
+ their html documentation.
+
