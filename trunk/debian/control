@@ -8,7 +8,7 @@ Standards-Version: 3.7.2
 Package: tfdocgen
 Architecture: any
 Depends: libglib2.0-0
-Description: Tilp Framework Documentation Generator
+Description: TiLP Framework Documentation Generator
  The tfdocgen program is a program used by the libti*2 libraries to generate
  their HTML documentation.
 

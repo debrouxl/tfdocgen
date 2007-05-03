@@ -8,7 +8,7 @@ Group: System Environment/Libraries
 License: GPL
 BuildRequires: glib2-devel
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Summary: Tilp Framework Documentation Generator
+Summary: TiLP Framework Documentation Generator
 %description
 The tfdocgen program is a program used by the libti*2 libraries to generate
 their HTML documentation.
