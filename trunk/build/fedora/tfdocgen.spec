@@ -14,7 +14,7 @@ The tfdocgen program is a program used by the libti*2 libraries to generate
 their HTML documentation.
 
 %prep
-%setup -n tfdocgen
+%setup
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} --libdir=%{_libdir} --mandir=%{_mandir} --disable-nls
@@ -42,5 +42,8 @@ rm -rf $RPM_BUILD_ROOT
 %doc README
 
 %changelog
+* Wed May 16 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Drop -n tfdocgen, the tarball uses name-version format now.
+
 * Thu May 3 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 First Fedora RPM.
