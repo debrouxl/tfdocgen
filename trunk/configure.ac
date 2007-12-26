@@ -2,6 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(tfdocgen, 1.00, [tilp-users@lists.sourceforge.net])
 AM_INIT_AUTOMAKE([dist-bzip2])
+AM_MAINTAINER_MODE
 
 AM_CONFIG_HEADER(config.h)
 AC_PREFIX_DEFAULT(/usr/local)

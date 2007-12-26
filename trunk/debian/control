@@ -2,8 +2,8 @@ Source: tfdocgen
 Section: devel
 Priority: extra
 Maintainer: Romain LIEVIN <roms@tilp.info>
-Build-Depends: debhelper (>= 5), libglib2.0-dev
-Standards-Version: 3.7.2
+Build-Depends: debhelper (>= 5), libglib2.0-dev, autotools-dev
+Standards-Version: 3.7.3
 
 Package: tfdocgen
 Architecture: any
