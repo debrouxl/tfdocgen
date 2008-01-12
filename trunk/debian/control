@@ -7,9 +7,10 @@ Standards-Version: 3.7.3
 
 Package: tfdocgen
 Architecture: any
-Depends: ${shlibs:Depends} libglib2.0-0
-Description: TiLP Framework Documentation Generator
+Depends: ${shlibs:Depends}
+Description: TiLP framework documentation generator
  The tfdocgen program is a program used by the libti*2 libraries to generate
- their HTML documentation. You don't need this package unless you want to
- develop on the libti*2 libraries.
+ their HTML documentation from sources and misc files. You don't need this 
+ package unless you want to develop on the libti*2 libraries.
+
 
