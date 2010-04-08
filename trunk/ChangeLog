@@ -1,4 +1,6 @@
-2006-01-14  Romain Liévin  <roms@tilp.info>
+2010-04-08  Lionel Debroux <lionel_debroux@yahoo.fr>
+	* updated to Autoconf 2.65.
 
+2006-01-14  Romain LiÃ©vin  <roms@tilp.info>
 	* tfdocgen: initial version.
 
