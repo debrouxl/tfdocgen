@@ -65,17 +65,17 @@ typedef struct
 /*****************************************************************************/
 
 // Open a C or H file and search for comment on function.
-static int get_list_of_functions(const char *filename, GList **fncts)
+static void get_list_of_functions(const char *filename, GList **fncts)
 {
 	FILE *fi;
 	char line[65536];
 
-	// open file	
+	// open file
 	fi = fopen(filename, "rt");
 	if(fi == NULL)
 	{
 		printf("Can't open this file: <%s>\n", filename);
-		return -1;
+		return;
 	}
 
 	// process
@@ -140,7 +140,7 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 			}
 			//printf("[%s]\n", f->comment);
 
-            // get return value
+			// get return value
 			f->returns = g_strdup("");
 			while(!feof(fi))
 			{
@@ -191,7 +191,6 @@ static int get_list_of_functions(const char *filename, GList **fncts)
 
 	// close file
 	fclose(fi);
-	return 0;
 }
 
 // Parse list of topics and write Table Of Contents
@@ -345,7 +344,6 @@ static int help(void)
 	fprintf(stdout, "\n");
 
 	exit(0);
-	return 0;
 }
 
 #define strexact(p1,p2) (!strcmp((p1),(p2)))
@@ -358,8 +356,7 @@ static int scan_cmdline(int argc, char **argv)
 	int cnt;
 	char *p;
 	char msg[80];
-	int import = 0;
-  
+
 	for(cnt=1; cnt<argc; cnt++) 
 	{
 		p = argv[cnt];
@@ -368,19 +365,22 @@ static int scan_cmdline(int argc, char **argv)
 		{
 			// a long option (like --help)
 			p++;
-		} else 
+		}
+		else 
 		{
 			// a folder to parse
 		}
 
 		strcpy(msg, p);
-	      
+
 		if(strexact(msg, "-help") || strexact(msg, "h")) 
+		{
 			help();
+		}
 
 		if(strexact(msg, "-version") || strexact(msg, "v")) 
 		{ 
-			//version(); 
+			version(); 
 			exit(0); 
 		}
 	}
@@ -440,7 +440,7 @@ int main(int argc, char **argv)
 	if(f == NULL)
 	{
 		printf("Can't open list of topics: <%s>\n", txt_file);
-		return -1;
+		return 1;
 	}
 
 	// Read list of topics
@@ -493,7 +493,7 @@ int main(int argc, char **argv)
 	if(fi == NULL)
 	{
 		printf("Can't open input file: <%s>\n", txt_file);
-		return -1;
+		return 1;
 	}
 
 	dst_file = g_strconcat(doc_folder, G_DIR_SEPARATOR_S, 
@@ -504,7 +504,8 @@ int main(int argc, char **argv)
 	if(fo == NULL)
 	{
 		printf("Can't open output file: <%s>\n", dst_file);
-		return -1;
+		fclose(fi);
+		return 1;
 	}
 
 	// Insert list of topics and functions
@@ -570,19 +571,19 @@ int main(int argc, char **argv)
 
 	// Free memory
 	for(l = topics; l != NULL; l = g_list_next(l))
-        {
-                topic *t = (topic *)l->data;
+	{
+		topic *t = (topic *)l->data;
 
 		g_free(t->filename);
 		g_free(t->title);
-		
+
 		for(l2 = t->fncts; l2 != NULL; l2 = g_list_next(l2))
 			g_free(l2->data);
 		g_list_free(t->fncts);
-        }
+	}
 	g_list_free(topics);
 
 	g_free(top_folder);
-	
+
 	return 0;
 }
