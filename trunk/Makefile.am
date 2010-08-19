@@ -1,3 +1,7 @@
+## Process this file with automake to produce Makefile.in
+
+ACLOCAL_AMFLAGS=-I m4
+
 bin_PROGRAMS = tfdocgen
 tfdocgen_SOURCES = tfdocgen.c
 
