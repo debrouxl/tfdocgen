@@ -2,7 +2,7 @@ SubVersion: $Id$
 
 Log of changes:	tfdocgen
 
-2011-xx-xx  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2011-05-28  Lionel_Debroux <lionel_debroux@yahoo.fr>
 	* first round of compiler (gcc, clang) warning fixes.
 	* minor changes to make autotools definitions work with both libtool 1.x and 2.x.
 	* reconfigure under Debian Squeeze with Autoconf 2.67 and Automake 1.11.1.
