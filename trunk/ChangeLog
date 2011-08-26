@@ -2,6 +2,9 @@ SubVersion: $Id$
 
 Log of changes:	tfdocgen
 
+2011-08-01  Lionel_Debroux <lionel_debroux@yahoo.fr>
+	- upgrade COPYING files and FSF addresses embedded in files, so as to make rpmlint happier.
+
 2011-05-28  Lionel_Debroux <lionel_debroux@yahoo.fr>
 	* first round of compiler (gcc, clang) warning fixes.
 	* minor changes to make autotools definitions work with both libtool 1.x and 2.x.
