@@ -159,7 +159,9 @@ static void get_list_of_functions(const char *filename, GList **fncts)
 
 			d = strchr(f->returns, ':');
 			if(d != NULL)
-				memmove(f->returns, d+2, strlen(d));
+			{
+				memmove(f->returns, d+2, strlen(d+2)+1);
+			}
 
 			// get function declaration
 			fgets(line, sizeof(line), fi);
