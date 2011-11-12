@@ -2,6 +2,15 @@ SubVersion: $Id$
 
 Log of changes:	tfdocgen
 
+2011-11-12  Lionel_Debroux <lionel_debroux@yahoo.fr>
+	- reconfigure with libtool 2.4.2.
+
+2011-11-11  Lionel_Debroux <lionel_debroux@yahoo.fr>
+	- fix oversize memmove spotted by AddressSanitizer.
+
+2011-09-06  Lionel_Debroux <lionel_debroux@yahoo.fr>
+	- reconfigure with Autoconf 2.68 and libtool 2.4.
+
 2011-08-01  Lionel_Debroux <lionel_debroux@yahoo.fr>
 	- upgrade COPYING files and FSF addresses embedded in files, so as to make rpmlint happier.
 
