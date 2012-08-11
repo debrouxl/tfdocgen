@@ -2,6 +2,15 @@ SubVersion: $Id$
 
 Log of changes:	tfdocgen
 
+2012-08-08  Lionel_Debroux <lionel_debroux@yahoo.fr>
+	- convert AUTHORS to UTF-8.
+
+2012-08-07  Lionel_Debroux <lionel_debroux@yahoo.fr>
+	- use LF line endings throughout the sources.
+
+2012-05-06  Lionel_Debroux <lionel_debroux@yahoo.fr>
+	- regenerate with Autoconf 2.69 and Automake 1.11.5.
+
 2011-11-12  Lionel_Debroux <lionel_debroux@yahoo.fr>
 	- reconfigure with libtool 2.4.2.
 
