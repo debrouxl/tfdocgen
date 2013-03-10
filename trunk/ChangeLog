@@ -2,28 +2,31 @@ SubVersion: $Id$
 
 Log of changes:	tfdocgen
 
-2012-08-08  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2013-02-19  Lionel Debroux <lionel_debroux@yahoo.fr>
+	- use AC_CONFIG_HEADERS([config.h]) instead of the deprecated AM_CONFIG_HEADER(config.h).
+
+2012-08-08  Lionel Debroux <lionel_debroux@yahoo.fr>
 	- convert AUTHORS to UTF-8.
 
-2012-08-07  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2012-08-07  Lionel Debroux <lionel_debroux@yahoo.fr>
 	- use LF line endings throughout the sources.
 
-2012-05-06  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2012-05-06  Lionel Debroux <lionel_debroux@yahoo.fr>
 	- regenerate with Autoconf 2.69 and Automake 1.11.5.
 
-2011-11-12  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2011-11-12  Lionel Debroux <lionel_debroux@yahoo.fr>
 	- reconfigure with libtool 2.4.2.
 
-2011-11-11  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2011-11-11  Lionel Debroux <lionel_debroux@yahoo.fr>
 	- fix oversize memmove spotted by AddressSanitizer.
 
-2011-09-06  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2011-09-06  Lionel Debroux <lionel_debroux@yahoo.fr>
 	- reconfigure with Autoconf 2.68 and libtool 2.4.
 
-2011-08-01  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2011-08-01  Lionel Debroux <lionel_debroux@yahoo.fr>
 	- upgrade COPYING files and FSF addresses embedded in files, so as to make rpmlint happier.
 
-2011-05-28  Lionel_Debroux <lionel_debroux@yahoo.fr>
+2011-05-28  Lionel Debroux <lionel_debroux@yahoo.fr>
 	* first round of compiler (gcc, clang) warning fixes.
 	* minor changes to make autotools definitions work with both libtool 1.x and 2.x.
 	* reconfigure under Debian Squeeze with Autoconf 2.67 and Automake 1.11.1.
