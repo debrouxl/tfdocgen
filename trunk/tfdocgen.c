@@ -93,7 +93,7 @@ static void get_list_of_functions(const char *filename, GList **fncts)
 			d = strrchr(line, ':');
 			if(d != NULL)
 				*d = '\0';
-			
+
 			f = g_malloc0(sizeof(fnct));
 			f->title = g_strdup(line+3);
 			//printf("[%s]\n", s);
@@ -108,7 +108,7 @@ static void get_list_of_functions(const char *filename, GList **fncts)
 				if(line[3] != '@')
 					break;
 				//printf("<%s>\n", line);
-				
+
 				a = g_malloc0(sizeof(arg));
 				str_array = g_strsplit(line, ": ", 2);
 				a->name = g_strdup(str_array[0]+4);
@@ -132,7 +132,7 @@ static void get_list_of_functions(const char *filename, GList **fncts)
 					break;
 				if(line[1] != '*')
 					break;
-		
+
 				tmp = g_strconcat(f->comment, line+3, NULL);
 				g_free(f->comment);
 				f->comment = tmp;
@@ -145,7 +145,7 @@ static void get_list_of_functions(const char *filename, GList **fncts)
 			while(!feof(fi))
 			{
 				gchar *tmp;
-				
+
 				fgets(line, sizeof(line), fi);
 				if(!strncmp(line, " **/", 4))
 					break;
@@ -174,14 +174,13 @@ static void get_list_of_functions(const char *filename, GList **fncts)
 			else if(strstr(line, "enum"))
 			{
 				f->type = TYPE_ENUM;
-				
+
 				while(!feof(fi) && line[0] != '}')
 				{
 					gchar *tmp;
 					
 					fgets(line, sizeof(line), fi);
-					tmp = g_strconcat(f->declaration, 
-							  line, NULL);
+					tmp = g_strconcat(f->declaration, line, NULL);
 					g_free(f->declaration);
 					f->declaration = tmp;
 				};
@@ -205,7 +204,7 @@ static void write_api_toc(FILE *fo)
 	{
 		topic *t = (topic *)l->data;
 		GList *fncts = t->fncts;
-		
+
 		fprintf(fo, "<span style=\"font-weight:bold;\">%s</span><br>\n", t->title);
 		fprintf(fo, "<ul>\n");
 		for(m = fncts; m != NULL; m = g_list_next(m))
@@ -392,16 +391,16 @@ static int scan_cmdline(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	char *top_folder;
-	char *src_folder;
-	char *doc_folder;
-	char *txt_file;
-	char *src_file;
-	char *dst_file;
-	FILE *f;
-	FILE *fi, *fo;
+	char *top_folder = NULL;
+	char *src_folder = NULL;
+	char *doc_folder = NULL;
+	char *txt_file = NULL;
+	char *src_file = NULL;
+	char *dst_file = NULL;
+	FILE *f = NULL;
+	FILE *fi = NULL, *fo = NULL;
 	char line[65536];
-	GList *l, *l2;
+	GList *l = NULL, *l2 = NULL, *l3 = NULL;
 
 	/*
 		Get program arguments
@@ -435,14 +434,13 @@ int main(int argc, char **argv)
 	*/
 
 	// Open list of topics ("api.txt")
-	txt_file = g_strconcat(doc_folder, G_DIR_SEPARATOR_S, 
-			       "api.txt", NULL);
+	txt_file = g_strconcat(doc_folder, G_DIR_SEPARATOR_S, "api.txt", NULL);
 	printf("Read list of topic from <%s>\n", txt_file);
 	f = fopen(txt_file, "rt");
 	if(f == NULL)
 	{
 		printf("Can't open list of topics: <%s>\n", txt_file);
-		return 1;
+		goto end;
 	}
 
 	// Read list of topics
@@ -450,15 +448,16 @@ int main(int argc, char **argv)
 	{
 		gchar **str_array;
 		topic *t;
-	
+
 		fgets(line, sizeof(line), f);
 		str_array = g_strsplit(line, " : ", 2);
-		
+
 		// fill structure
 		t = g_malloc0(sizeof(topic));
-		t->filename = str_array[0];
+		t->filename = g_strdup(str_array[0]);
 		t->basename = g_strconcat(str_array[0], ".html", NULL);
-		t->title = str_array[1];
+		t->title = g_strdup(str_array[1]);
+		g_strfreev(str_array);
 
 		// add to linked list
 		topics = g_list_append(topics, t);
@@ -476,9 +475,8 @@ int main(int argc, char **argv)
 	{
 		topic *t = (topic *)l->data;
 		gchar *path;
-		
-		path = g_strconcat(src_folder, G_DIR_SEPARATOR_S,
-				   t->filename, NULL);
+
+		path = g_strconcat(src_folder, G_DIR_SEPARATOR_S, t->filename, NULL);
 		get_list_of_functions(path, &t->fncts);
 		g_free(path);
 	}
@@ -494,8 +492,8 @@ int main(int argc, char **argv)
 	fi = fopen(src_file, "rt");
 	if(fi == NULL)
 	{
-		printf("Can't open input file: <%s>\n", txt_file);
-		return 1;
+		printf("Can't open input file: <%s>\n", src_file);
+		goto end;
 	}
 
 	dst_file = g_strconcat(doc_folder, G_DIR_SEPARATOR_S, 
@@ -507,7 +505,7 @@ int main(int argc, char **argv)
 	{
 		printf("Can't open output file: <%s>\n", dst_file);
 		fclose(fi);
-		return 1;
+		goto end;
 	}
 
 	// Insert list of topics and functions
@@ -541,7 +539,7 @@ int main(int argc, char **argv)
 		topic *t = (topic *)l->data;
 		GList *fncts = t->fncts;
 		gchar *filename;
-		
+
 		// Open an html file
 		filename = g_strconcat(doc_folder, G_DIR_SEPARATOR_S,
 				       "html", G_DIR_SEPARATOR_S, 
@@ -550,12 +548,14 @@ int main(int argc, char **argv)
 		if(f == NULL)
 		{
 			printf("Can't open this file: <%s>\n", filename);
-			return -1;
+			g_free(filename);
+			goto end;
 		}
+		g_free(filename);
 
 		// Write topic header
 		write_topic_header(f, t->title);
-		
+
 		// Write function title and description
 		write_fncts_content(f, fncts);
 
@@ -563,7 +563,6 @@ int main(int argc, char **argv)
 		write_topic_end(f);
 
 		// Close file
-		g_free(filename);
 		fclose(f);
 	}
 
@@ -571,20 +570,44 @@ int main(int argc, char **argv)
 		Part 5: release memory
 	*/
 
+end:
 	// Free memory
 	for(l = topics; l != NULL; l = g_list_next(l))
 	{
 		topic *t = (topic *)l->data;
 
 		g_free(t->filename);
+		g_free(t->basename);
 		g_free(t->title);
 
 		for(l2 = t->fncts; l2 != NULL; l2 = g_list_next(l2))
-			g_free(l2->data);
+		{
+			fnct *fn = (fnct *)l2->data;
+
+			g_free(fn->title);
+			g_free(fn->declaration);
+			for (l3 = fn->args; l3 != NULL; l3 = g_list_next(l3))
+			{
+				arg *a = (arg *)l3->data;
+				g_free(a->name);
+				g_free(a->comment);
+				g_free(a);
+			}
+			g_list_free(fn->args);
+			g_free(fn->comment);
+			g_free(fn->returns);
+			g_free(fn);
+		}
 		g_list_free(t->fncts);
+		g_free(t);
 	}
 	g_list_free(topics);
 
+	g_free(dst_file);
+	g_free(src_file);
+	g_free(txt_file);
+	g_free(doc_folder);
+	g_free(src_folder);
 	g_free(top_folder);
 
 	return 0;
